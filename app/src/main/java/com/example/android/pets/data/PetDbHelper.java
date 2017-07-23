@@ -1,4 +1,18 @@
-
+/*
+ * Copyright (C) 2016 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.example.android.pets.data;
 
 import android.content.Context;
@@ -8,52 +22,53 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.android.pets.data.PetContract.PetEntry;
 
 /**
- * Created by mahmoud on 28/05/17.
+ * Database helper for Pets app. Manages database creation and version management.
  */
-
 public class PetDbHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "shelter.db";
+    public static final String LOG_TAG = PetDbHelper.class.getSimpleName();
 
-    public static final String OPEN = "(";
-    public static final String CLOSE = ");";
-    public static final String INT = " INTEGER ";
-    public static final String TXT = " TEXT" ;
-    public static final String COMA = ", ";
-    public static final String CREATE_TABLE = " CREATE TABLE ";
-    public static final String PRIM_KEY = " PRIMARY KEY ";
-    public static final String AUTO_INC = " AUTOINCREMENT ";
-    public static final String NOT_NULL = " NOT NULL ";
-    public static final String DEF_0 = " DEFAULT 0 ";
+    /**
+     * Name of the database file
+     */
+    private static final String DATABASE_NAME = "shelter.db";
 
-    public static final String DROP_TABLE = " DROP TABLE IF EXSIST ";
+    /**
+     * Database version. If you change the database schema, you must increment the database version.
+     */
+    private static final int DATABASE_VERSION = 1;
 
+    /**
+     * Constructs a new instance of {@link PetDbHelper}.
+     *
+     * @param context of the app
+     */
     public PetDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * This is called when the database is created for the first time.
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // Create a String that contains the SQL statement to create the pets table
+        String SQL_CREATE_PETS_TABLE = "CREATE TABLE " + PetEntry.TABLE_NAME + " ("
+                + PetEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + PetEntry.COLUMN_PET_NAME + " TEXT NOT NULL, "
+                + PetEntry.COLUMN_PET_BREED + " TEXT, "
+                + PetEntry.COLUMN_PET_GENDER + " INTEGER NOT NULL, "
+                + PetEntry.COLUMN_PET_WEIGHT + " INTEGER NOT NULL DEFAULT 0);";
 
-        //CREATE TABLE pets (_id INTEGER, name TEXT, breed TEXT, gender INTEGER, weight INTEGER);
-
-        String SQL_CREATE_PETS_TABLE = CREATE_TABLE + PetEntry.TABLE_NAME + OPEN
-                + PetEntry.COLUMN_PET_ID + INT + PRIM_KEY  + AUTO_INC + COMA
-                + PetEntry.COLUMN_PET_NAME + TXT + NOT_NULL + COMA
-                + PetEntry.COLUMN_PET_BREED + TXT + COMA
-                + PetEntry.COLUMN_PET_GENDER + INT + COMA
-                + PetEntry.COLUMN_PET_WEIGHT + INT + DEF_0 + CLOSE;
-
-
+        // Execute the SQL statement
         db.execSQL(SQL_CREATE_PETS_TABLE);
-
     }
 
+    /**
+     * This is called when the database needs to be upgraded.
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-
-
+        // The database is still at version 1, so there's nothing to do be done here.
     }
 }
